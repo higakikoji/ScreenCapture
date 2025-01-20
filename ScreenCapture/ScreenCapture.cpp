@@ -33,6 +33,7 @@ public:
 
   GraphicsCapture();
   ~GraphicsCapture();
+  bool start(HWND hwnd, bool free_threaded, const Callback &callback);
   bool start(HMONITOR hmon, bool free_threaded, const Callback &callback);
   void stop();
 
@@ -108,6 +109,12 @@ bool GraphicsCapture::startImpl(bool free_threaded, const Callback &callback, co
   } else {
     return false;
   }
+}
+
+bool GraphicsCapture::start(HWND hwnd, bool free_threaded, const Callback &callback) {
+  return startImpl(free_threaded, callback, [&](auto interop) {
+    interop->CreateForWindow(hwnd, guid_of<ABI::Windows::Graphics::Capture::IGraphicsCaptureItem>(), put_abi(m_capture_item));
+    });
 }
 
 bool GraphicsCapture::start(HMONITOR hmon, bool free_threaded, const Callback &callback) {
